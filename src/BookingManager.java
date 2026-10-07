@@ -25,22 +25,11 @@ public class BookingManager {
             if (!show.searchSeatsStatus(seats)) throw new RuntimeException("Selected seates are not available");
 
             int cost = show.calculateCost(seats);
+            boolean paymentStatus = paymentStrategy.pay(cost);
 
-            PaymentStatus paymentStatus = null;
-            CompletableFuture<PaymentStatus> paymentResponse = CompletableFuture.supplyAsync(() -> paymentStrategy.pay(cost));
-
-            try {
-                paymentStatus = paymentResponse.get(5, TimeUnit.SECONDS);
-            } catch (Exception e) {
-                paymentResponse.cancel(true);
-                paymentStatus = PaymentStatus.FAILED;
-
-            }
-
-
-            if (paymentStatus.equals(PaymentStatus.SUCCESS)) {
+            if (paymentStatus) {
                 show.bookseats(seats);
-                Booking booking = new Booking(user, show, seats);
+                Booking booking = new Booking(user, show, seats, cost);
                 return booking;
             } else {
                 throw new RuntimeException("Payment failed please try again");
@@ -51,7 +40,4 @@ public class BookingManager {
         }
     }
 
-    public void cancelBooking(Booking booking) {
-        booking.getShow().unBookseats(booking.getSeats());
-    }
 }

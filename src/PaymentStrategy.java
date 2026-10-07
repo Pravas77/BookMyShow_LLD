@@ -1,3 +1,3 @@
 public interface PaymentStrategy {
-    PaymentStatus pay(int cost);
+    boolean pay(int cost);
 }

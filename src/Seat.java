@@ -22,11 +22,18 @@ public class Seat {
     public boolean equals(Object o) {
         if (o == null || getClass() != o.getClass()) return false;
         Seat seat = (Seat) o;
-        return id == seat.id && seatCatogary == seat.seatCatogary;
+        return id == seat.id;
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, seatCatogary);
+        return Objects.hashCode(id);
+    }
+
+    @Override
+    public String toString() {
+        return "Seat{" +
+                "id=" + id +
+                '}';
     }
 }

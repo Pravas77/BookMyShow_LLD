@@ -6,79 +6,64 @@ public class Main {
     public static void main(String[] args) throws InterruptedException {
         System.out.println("Hello");
 
+        Show show1 = new Show(
+                LocalDate.of(2027, 1, 1),
+                LocalTime.of(12, 0),
+                new Movie("titanic"),
+                null,
+                Map.of(
+                        SeatCatogary.SILVER, 100,
+                        SeatCatogary.GOLD, 200,
+                        SeatCatogary.PLATINUM, 500
+                ));
+
+        Show show2 = new Show(
+                LocalDate.of(2027, 1, 2),
+                LocalTime.of(12, 0),
+                new Movie("avatar"),
+                null,
+                Map.of(
+                        SeatCatogary.SILVER, 100,
+                        SeatCatogary.GOLD, 200,
+                        SeatCatogary.PLATINUM, 500
+                ));
+
+
         Seat seat1 = new Seat(1, SeatCatogary.SILVER);
-        Seat seat2 = new Seat(2, SeatCatogary.GOLD);
+        Seat seat2 = new Seat(2, SeatCatogary.SILVER);
         Seat seat3 = new Seat(3, SeatCatogary.PLATINUM);
 
-        List<Seat> seats1 = new ArrayList<>(List.of(seat1, seat2, seat3));
-        Screen screen1 = new Screen(1, seats1);
+        Screen screen1 = new Screen(1, List.of(seat1, seat2, seat3), List.of(show1, show2));
+        show1.setScreen(screen1);
+        show2.setScreen(screen1);
 
-        Theater theater1 = new Theater(1, new ArrayList<>(List.of(screen1)));
+        Theater theater1 = new Theater(1, List.of(screen1));
 
-        City city = City.DELHI;
-        TheaterFactory theaterFactory = new TheaterFactory(Map.of(city, List.of(theater1)));
+        TheaterManager theaterManager = new TheaterManager(
+                Map.of(City.DELHI, List.of(theater1))
+        );
 
-        BookingManager bookingManager = new BookingManager();
-
-        BookMyShow bookMyShow = new BookMyShow(theaterFactory, bookingManager);
-
-
-        // addind show in theater 1
-        Movie movie = new Movie("Titanic");
-
-        Map<SeatCatogary,Integer> priceStructure = new EnumMap<>(SeatCatogary.class);
-        priceStructure.put(SeatCatogary.SILVER,200);
-        priceStructure.put(SeatCatogary.GOLD,300);
-        priceStructure.put(SeatCatogary.PLATINUM,500);
-
-        Show show1 = new Show(LocalDate.of(2026, 12, 5), LocalTime.of(14, 0), movie, screen1, priceStructure);
-        Show show2 = new Show(LocalDate.of(2026, 12, 5), LocalTime.of(17, 0), movie, screen1, priceStructure);
-        screen1.addShow(show1);
-        screen1.addShow(show2);
-
-
-        // Client
         User user1 = new User(1);
         User user2 = new User(2);
 
-        Set<Movie> movies = bookMyShow.searchMovies(City.DELHI, LocalDate.of(2026, 12, 5));
-        for (Movie movie1 : movies) System.out.println(movie1.getName());
+        BookMyShow bookMyShow = new BookMyShow(theaterManager, new BookingManager(), List.of(user1, user2));
 
-        List<Theater> theaters = bookMyShow.searchTheater(City.DELHI, movies.iterator().next(), LocalDate.of(2026, 12, 5));
-        for (Theater theater : theaters) System.out.println(theater.getId());
-
-        List<Show> shows = bookMyShow.SearchShows(theaters.get(0), movies.iterator().next(), LocalDate.of(2026, 12, 5));
-        for (Show show : shows) System.out.println(show.getLocalTime());
+        System.out.println(bookMyShow.searchShows(City.DELHI, new Movie("titanic")));
+        System.out.println(bookMyShow.searchShows(City.DELHI, new Movie("xyz")));
+        System.out.println(bookMyShow.searchShows(City.DELHI, new Movie("avatar")));
 
         Thread thread1 = new Thread(() -> {
-            Booking booking = bookMyShow.bookSeats(
-                    user1,
-                    shows.get(0),
-                    new ArrayList<>(List.of(seat1, seat2)),
-                    new RazorpayPaymentStrategy());
-
-            System.out.println("User id who booked " + booking.getUser().getId() + "        " + Thread.currentThread().getName());
-            try {
-                Thread.sleep(1000);
-            } catch (InterruptedException e) {
-                throw new RuntimeException(e);
-            }
-//            bookMyShow.cancelBooking(booking);
-//            System.out.println("Booking canceled Uesr id " + booking.getUser().getId() + "        " + Thread.currentThread().getName());
+            Booking booking = bookMyShow.bookSeats(user1, show1, new ArrayList<>(List.of(seat1, seat2)), new RazorpayPaymentStrategy());
+            System.out.println(booking);
         });
 
         Thread thread2 = new Thread(() -> {
-            Booking booking = bookMyShow.bookSeats(
-                    user2,
-                    shows.get(0),
-                    new ArrayList<>(List.of(seat1,seat3)),
-                    new RazorpayPaymentStrategy());
-
-            System.out.println("User id who booked " + booking.getUser().getId() + "        " + Thread.currentThread().getName());
+            Booking booking = bookMyShow.bookSeats(user2, show1, new ArrayList<>(List.of(seat2, seat3)), new RazorpayPaymentStrategy());
+            System.out.println(booking);
         });
 
         thread1.start();
-//        Thread.sleep(6000);
+//        Thread.sleep(100);
         thread2.start();
 
     }

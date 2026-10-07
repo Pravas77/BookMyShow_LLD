@@ -1,15 +1,17 @@
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 public class Screen {
 
     private int id;
     private List<Seat> seats;
-    private List<Show> shows = new ArrayList<>();
+    private List<Show> shows;
 
-    public Screen(int id, List<Seat> seats) {
+    public Screen(int id, List<Seat> seats, List<Show> shows) {
         this.id = id;
         this.seats = seats;
+        this.shows = shows;
     }
 
     public int getId() {
@@ -36,7 +38,13 @@ public class Screen {
         this.shows = shows;
     }
 
-    public void addShow(Show show) {
-        shows.add(show);
+    public List<Show> searchShows(Movie movie) {
+
+        List<Show> relevantShows = new ArrayList<>();
+        for (Show show : shows) {
+            if (show.getMovie().equals(movie)) relevantShows.add(show);
+        }
+
+        return relevantShows;
     }
 }

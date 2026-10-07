@@ -1,3 +1,3 @@
 public enum SeatCatogary {
-    SILVER,GOLD,PLATINUM
+    SILVER, GOLD, PLATINUM
 }

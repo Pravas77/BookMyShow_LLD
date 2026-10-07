@@ -1,3 +1,3 @@
 public enum City {
-    DELHI,MUMBAI
+    DELHI, MUMBAI
 }

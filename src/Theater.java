@@ -19,22 +19,13 @@ public class Theater {
         return screens;
     }
 
-    public void addScreen(Screen screen) {
-        screens.add(screen);
-    }
+    public List<Show> searchShows(Movie movie) {
 
-    public List<Show> getReleventShows(Movie movie, LocalDate localDate) {
-
-        List<Show> releventShows = new ArrayList<>();
+        List<Show> shows = new ArrayList<>();
         for (Screen screen : screens) {
-            for (Show show : screen.getShows()) {
-                if (show.getMovie().getName().equals(movie.getName()) && show.getLocalDate().equals(localDate))
-                    releventShows.add(show);
-            }
+            shows.addAll(screen.searchShows(movie));
         }
 
-        return releventShows;
+        return shows;
     }
-
-
 }

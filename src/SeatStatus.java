@@ -1,3 +1,3 @@
 public enum SeatStatus {
-    AVAILABLE,BOOCKED
+    AVAILABLE, BOOKED
 }

@@ -1,32 +1,24 @@
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
 public class BookMyShow {
-    private TheaterFactory theaterFactory;
+    private TheaterManager theaterManager;
     private BookingManager bookingManager;
+    private List<User> users;
 
-    public BookMyShow(TheaterFactory theaterFactory, BookingManager bookingManager) {
-        this.theaterFactory = theaterFactory;
+    public BookMyShow(TheaterManager theaterManager, BookingManager bookingManager, List<User> users) {
+        this.theaterManager = theaterManager;
         this.bookingManager = bookingManager;
+        this.users = users;
     }
 
-    public Set<Movie> searchMovies(City city, LocalDate localDate) {
-        return theaterFactory.searchMovies(city, localDate);
+    public List<Show> searchShows(City city, Movie movie) {
+        return theaterManager.searchShows(city, movie);
     }
 
-    public List<Theater> searchTheater(City city, Movie movie, LocalDate localDate) {
-        return theaterFactory.searchTheater(city, movie, localDate);
-    }
-
-    public List<Show> SearchShows(Theater theater, Movie movie, LocalDate localDate) {
-        return theaterFactory.getReleventShows(theater, movie, localDate);
-    }
-
-    public Booking bookSeats(User user, Show show, List<Seat> seats,PaymentStrategy paymentStrategy){
+    public Booking bookSeats(User user, Show show, List<Seat> seats, PaymentStrategy paymentStrategy) {
         return bookingManager.bookSeats(user, show, seats, paymentStrategy);
-    }
-    public void cancelBooking(Booking booking){
-        bookingManager.cancelBooking(booking);
     }
 }
